@@ -29,7 +29,7 @@ class MainApp : Application() {
         val shpBBox = emptyBBox
         val mapParams = MapParams(zoomLevel, tileSizeInCanvas, canvasBBox, tileBBox, shpBBox)
         val scene = SceneManager.makeScene(group, canvas, highlightCanvas, mapParams)
-        SceneEventHandler.dragAndDropHandler(group, scene, canvas, highlightCanvas, shpList, mapParams)
+        SceneEventHandler.dragAndDropWithAllHandler(group, scene, canvas, highlightCanvas, shpList, mapParams)
 
         primaryStage.scene = scene
         primaryStage.show()

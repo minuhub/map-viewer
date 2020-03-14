@@ -8,7 +8,7 @@ import mapviewer.gui.highlight.HighlightManager
 import mapviewer.parser.domain.Shp
 
 object EventUtil {
-    fun reRenderShpCanvas(canvas: Canvas, shpList: MutableList<Shp>, mapParams: MapParams){
+    fun reRenderShpCanvas(canvas: Canvas, shpList: MutableList<Shp>, mapParams: MapParams) {
         RenderingManager.clearCanvas(canvas, mapParams)
         for (shp in shpList) {
             RenderingManager.renderAllOnCanvas(canvas, shp, mapParams)

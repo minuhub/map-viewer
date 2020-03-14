@@ -5,7 +5,6 @@ import javafx.scene.paint.Color
 import mapviewer.gui.RenderingUtil
 import mapviewer.gui.domain.DrawingPointParams.diameter
 import mapviewer.gui.domain.DrawingPointParams.radius
-import mapviewer.gui.domain.GraphicStyle
 import mapviewer.gui.domain.MapParams
 import mapviewer.parser.domain.ShpRecord
 
@@ -17,7 +16,7 @@ class PointRenderer : Renderer {
         for (shpRecord in shpRecordList) {
             if (!RenderingUtil.isaBBoxInbBBox(shpRecord.recordContent.recordBBox, mapParams.shpBBox)) continue
 
-            val translatedPoints = RenderingUtil.translatePoints(
+            val translatedPoints = RenderingUtil.translatePointsToTileInCanvas(
                 shpRecord.recordContent.points[0], mapParams, 1, tileIndexXinCanvas, tileIndexYinCanvas
             )
             gc.fill = Color.YELLOWGREEN

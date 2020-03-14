@@ -1,2 +1,0 @@
-//package mapviewer.gui.renderer
-//

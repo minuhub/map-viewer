@@ -19,7 +19,7 @@ object SceneEventHandler {
     private var firstFlag = false
     private val windowShortenFactor = 10000.0
 
-    fun dragAndDropHandler(group: Group, scene: Scene, canvas: Canvas, highlightCanvas: Canvas, shpList: MutableList<Shp>, mapParams: MapParams) {
+    fun dragAndDropWithAllHandler(group: Group, scene: Scene, canvas: Canvas, highlightCanvas: Canvas, shpList: MutableList<Shp>, mapParams: MapParams) {
         scene.onDragOver = EventHandler { event ->
             val db = event.dragboard
             if (db.hasFiles()) {
@@ -52,10 +52,10 @@ object SceneEventHandler {
 
     private fun initialize(group: Group, scene: Scene, canvas: Canvas, highlightCanvas: Canvas, shpList: MutableList<Shp>, mapParams: MapParams) {
         mapParams.shpBBox = FunctionalBBox(
-            shpList.first().shpHeader.minX + windowShortenFactor,
-            shpList.first().shpHeader.minY + windowShortenFactor,
-            shpList.first().shpHeader.maxX - windowShortenFactor,
-            shpList.first().shpHeader.maxY - windowShortenFactor
+                shpList.first().shpHeader.minX + windowShortenFactor,
+                shpList.first().shpHeader.minY + windowShortenFactor,
+                shpList.first().shpHeader.maxX - windowShortenFactor,
+                shpList.first().shpHeader.maxY - windowShortenFactor
         )
         mapParams.shpBBox.updateWidth()
         mapParams.shpBBox.updateHeight()

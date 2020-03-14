@@ -13,12 +13,12 @@ object HighlightManager {
     fun selectOneFeature(shp: Shp, eventX: Double, eventY: Double, mapParams: MapParams): MutableList<ShpRecord> {
         val selectedFeatureIdList = mutableListOf<ShpRecord>()
         for (shpRecord in shp.shpRecordList) {
-            if (!HighlightUtil.isInsideRecordBBox(shpRecord.recordContent.recordBBox, eventX, eventY, mapParams))   continue
+            if (!HighlightUtil.isInsideRecordBBox(shpRecord.recordContent.recordBBox, eventX, eventY, mapParams)) continue
             when (shp.shpHeader.shapeType) {
                 ShapeType.Polygon -> {
                     for (partIndex in 0 until shpRecord.recordContent.numParts) {
                         if (HighlightUtil.isInsidePolygon(shpRecord.recordContent.points[partIndex],
-                                shpRecord.recordContent.parts[partIndex + 1] - shpRecord.recordContent.parts[partIndex], eventX, eventY)) {
+                                        shpRecord.recordContent.parts[partIndex + 1] - shpRecord.recordContent.parts[partIndex], eventX, eventY)) {
                             selectedFeatureIdList.add(shpRecord)
                             break
                         }
@@ -27,7 +27,7 @@ object HighlightManager {
                 ShapeType.PolyLine -> {
                     for (partIndex in 0 until shpRecord.recordContent.numParts) {
                         if (HighlightUtil.isOnPolyline(shpRecord.recordContent.points[partIndex],
-                                shpRecord.recordContent.parts[partIndex + 1] - shpRecord.recordContent.parts[partIndex], eventX, eventY, mapParams)) {
+                                        shpRecord.recordContent.parts[partIndex + 1] - shpRecord.recordContent.parts[partIndex], eventX, eventY, mapParams)) {
                             selectedFeatureIdList.add(shpRecord)
                             break
                         }
@@ -48,7 +48,7 @@ object HighlightManager {
                 ShapeType.Polygon, ShapeType.PolyLine -> {
                     for (partIndex in 0 until shpRecord.recordContent.numParts) {
                         if (HighlightUtil.isInsideSelectedBBox(selectedBBox, shpRecord.recordContent.points[partIndex],
-                                shpRecord.recordContent.parts[partIndex + 1] - shpRecord.recordContent.parts[partIndex])) {
+                                        shpRecord.recordContent.parts[partIndex + 1] - shpRecord.recordContent.parts[partIndex])) {
                             selectedFeatureIdList.add(shpRecord)
                             break
                         }
@@ -64,7 +64,7 @@ object HighlightManager {
     fun highlightRecord(highlightCanvas: Canvas, shpHeader: ShpHeader, selectedFeatureList: MutableList<ShpRecord>, mapParams: MapParams) {
         if (selectedFeatureList.isNotEmpty()) {
             when (shpHeader.shapeType) {
-                ShapeType.Polygon -> polygonHighlighter.highlight(highlightCanvas,selectedFeatureList, mapParams)
+                ShapeType.Polygon -> polygonHighlighter.highlight(highlightCanvas, selectedFeatureList, mapParams)
                 ShapeType.PolyLine -> polylineHighlighter.highlight(highlightCanvas, selectedFeatureList, mapParams)
                 ShapeType.Point -> pointHighlighter.highlight(highlightCanvas, selectedFeatureList, mapParams)
                 ShapeType.MultiPoint -> TODO()

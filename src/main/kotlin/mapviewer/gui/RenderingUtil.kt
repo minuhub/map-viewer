@@ -5,52 +5,56 @@ import mapviewer.gui.domain.PointArray
 import mapviewer.parser.domain.BBox
 import mapviewer.parser.domain.Point
 import kotlin.math.pow
-
 class RenderingUtil {
     companion object {
+        //below functions : used for highlighting the selected area
+        fun canvasToShpX(windowPointX: Double, mapParams: MapParams): Double {
+            return RenderingManager.leftTopTileIndexInShp.x + (windowPointX - RenderingManager.leftTopTileIndexInCanvas.x) / mapParams.tileSizeInCanvas * mapParams.shpBBox.width
+        }
 
-        fun translatePoints(pointList: MutableList<Point>, mapParams: MapParams, numPoints: Int): PointArray {
+        fun canvasToShpY(windowPointY: Double, mapParams: MapParams): Double {
+            return RenderingManager.leftTopTileIndexInShp.y - (windowPointY - RenderingManager.leftTopTileIndexInCanvas.y) / mapParams.tileSizeInCanvas * mapParams.shpBBox.height
+        }
+
+        fun translatePointsToWholeCanvas(pointList: MutableList<Point>, mapParams: MapParams, numPoints: Int, tileIndexXinCanvas: Double, tileIndexYinCanvas: Double): PointArray {
             val pointXArray = DoubleArray(numPoints)
             val pointYArray = DoubleArray(numPoints)
             for (index in 0 until numPoints) {
-                pointXArray[index] = translateX(pointList[index].pointX, mapParams)
-                pointYArray[index] = translateY(pointList[index].pointY, mapParams)
-            }
-            return PointArray(pointXArray, pointYArray)
-        }
-        fun translateX(shpPointX: Double, mapParams: MapParams): Double {
-            return (shpPointX - mapParams.shpBBox.centerX) * mapParams.shpBBox.bBoxToCanvasRatioX + mapParams.canvasBBox.width / 2
-        }
-
-        fun reverseTranslateX(windowPointX: Double, mapParams: MapParams): Double {
-            return ((windowPointX - (mapParams.canvasBBox.width / 2)) / mapParams.shpBBox.bBoxToCanvasRatioX + mapParams.shpBBox.centerX)
-        }
-
-        fun translateY(shpPointY: Double, mapParams: MapParams): Double {
-            return (mapParams.canvasBBox.height - (shpPointY - mapParams.shpBBox.centerX) * mapParams.shpBBox.bBoxToCanvasRatioY - (mapParams.canvasBBox.height / 2))
-        }
-
-        fun reverseTranslateY(windowPointY: Double, mapParams: MapParams): Double {
-            return (mapParams.canvasBBox.height - (mapParams.canvasBBox.height / 2) - windowPointY) / mapParams.shpBBox.bBoxToCanvasRatioY + mapParams.shpBBox.centerX
-        }
-        fun translatePoints(pointList: MutableList<Point>, mapParams: MapParams, numPoints: Int, tileIndexXinCanvas: Double, tileIndexYinCanvas: Double): PointArray {
-            val pointXArray = DoubleArray(numPoints)
-            val pointYArray = DoubleArray(numPoints)
-            for (index in 0 until numPoints) {
-                pointXArray[index] = shpToCanvasX(pointList[index].pointX, mapParams, tileIndexXinCanvas)
-                pointYArray[index] = shpToCanvasY(pointList[index].pointY, mapParams, tileIndexYinCanvas)
+                pointXArray[index] = shpToWholeCanvasX(pointList[index].x, mapParams)
+                pointYArray[index] = shpToWholeCanvasY(pointList[index].y, mapParams)
             }
             return PointArray(pointXArray, pointYArray)
         }
 
-        fun shpToCanvasX(shpPointX: Double, mapParams: MapParams, tileIndexXinCanvas: Double): Double {
+        private fun shpToWholeCanvasX(shpPointX: Double, mapParams: MapParams): Double {
+            val adjustedShpPointX = (shpPointX - RenderingManager.leftTopTileIndexInShp.x) * mapParams.shpBBox.bBoxToCanvasRatioX
+            return RenderingManager.leftTopTileIndexInCanvas.x + adjustedShpPointX
+        }
+
+        private fun shpToWholeCanvasY(shpPointY: Double, mapParams: MapParams): Double {
+            val adjustedShpPointY = (shpPointY - RenderingManager.leftTopTileIndexInShp.y) * mapParams.shpBBox.bBoxToCanvasRatioY
+            return RenderingManager.leftTopTileIndexInCanvas.y - adjustedShpPointY
+        }
+
+        //below functions : used for normal rendering
+        fun translatePointsToTileInCanvas(pointList: MutableList<Point>, mapParams: MapParams, numPoints: Int, tileIndexXinCanvas: Double, tileIndexYinCanvas: Double): PointArray {
+            val pointXArray = DoubleArray(numPoints)
+            val pointYArray = DoubleArray(numPoints)
+            for (index in 0 until numPoints) {
+                pointXArray[index] = shpToCanvasX(pointList[index].x, mapParams, tileIndexXinCanvas)
+                pointYArray[index] = shpToCanvasY(pointList[index].y, mapParams, tileIndexYinCanvas)
+            }
+            return PointArray(pointXArray, pointYArray)
+        }
+
+        private fun shpToCanvasX(shpPointX: Double, mapParams: MapParams, tileIndexXinCanvas: Double): Double {
             val adjustedShpPointX = (shpPointX - mapParams.shpBBox.centerX) * mapParams.shpBBox.bBoxToCanvasRatioX
-            return  adjustedShpPointX + (mapParams.tileSizeInCanvas / 2) + tileIndexXinCanvas
+            return adjustedShpPointX + (mapParams.tileSizeInCanvas / 2) + tileIndexXinCanvas
         }
 
-        fun shpToCanvasY(shpPointY: Double, mapParams: MapParams, tileIndexYinCanvas: Double): Double {
+        private fun shpToCanvasY(shpPointY: Double, mapParams: MapParams, tileIndexYinCanvas: Double): Double {
             val adjustedShpPointY = mapParams.tileSizeInCanvas - (shpPointY - mapParams.shpBBox.centerY) * mapParams.shpBBox.bBoxToCanvasRatioY
-            return  adjustedShpPointY - (mapParams.tileSizeInCanvas / 2) + tileIndexYinCanvas
+            return adjustedShpPointY - (mapParams.tileSizeInCanvas / 2) + tileIndexYinCanvas
         }
 
         fun calculateShpBBoxEdgeLength(mapParams: MapParams): Double {
@@ -73,21 +77,17 @@ class RenderingUtil {
             return mapParams.standardBBox.maxY - y * mapParams.standardBBox.longerEdge / ((2.0).pow(mapParams.zoomLevel))
         }
 
-//        fun isInsideBBox(recordContent: RecordContent, viewBBox: FunctionalBBox): Boolean {
-//            return if (!(viewBBox.minX <= recordContent.minX && recordContent.minX <= viewBBox.maxX) ||
-//                    !(viewBBox.minY <= recordContent.minY && recordContent.minY <= viewBBox.maxY)
-
         fun isaBBoxInbBBox(aBBox: BBox, bBBox: BBox): Boolean {
             return if (!(bBBox.minX <= aBBox.minX && aBBox.minX <= bBBox.maxX) ||
-                !(bBBox.minY <= aBBox.minY && aBBox.minY <= bBBox.maxY)
+                    !(bBBox.minY <= aBBox.minY && aBBox.minY <= bBBox.maxY)
             ) {
                 false
             } else if (!(bBBox.minX <= aBBox.maxX && aBBox.maxX <= bBBox.maxX) ||
-                !(bBBox.minY <= aBBox.minY && aBBox.minY <= bBBox.maxY)
+                    !(bBBox.minY <= aBBox.minY && aBBox.minY <= bBBox.maxY)
             ) {
                 false
             } else if (!(bBBox.minX <= aBBox.minX && aBBox.minX <= bBBox.maxX) ||
-                !(bBBox.minY <= aBBox.maxY && aBBox.maxY <= bBBox.maxY)
+                    !(bBBox.minY <= aBBox.maxY && aBBox.maxY <= bBBox.maxY)
             ) {
                 false
             } else !(!(bBBox.minX <= aBBox.maxX && aBBox.maxX <= bBBox.maxX) ||
@@ -97,9 +97,7 @@ class RenderingUtil {
         fun isOverlap(aBBox: BBox, bBBox: BBox): Boolean {
             return if (aBBox.minX > bBBox.maxX || bBBox.minX > aBBox.maxX) {
                 false
-            } else if (aBBox.minY > bBBox.maxY || bBBox.minY > aBBox.maxY) {
-                false
-            } else true
+            } else !(aBBox.minY > bBBox.maxY || bBBox.minY > aBBox.maxY)
         }
     }
 }

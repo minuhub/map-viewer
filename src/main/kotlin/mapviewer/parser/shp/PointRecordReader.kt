@@ -12,7 +12,7 @@ class PointRecordReader {
 
         val shapeType = ShapeType.fromType(buf.int)
         val points = mutableListOf(mutableListOf(Point(buf.double, buf.double)))
-        val recordBBox = BBox(points[0][0].pointX, points[0][0].pointY, points[0][0].pointX, points[0][0].pointY)
+        val recordBBox = BBox(points[0][0].x, points[0][0].y, points[0][0].x, points[0][0].y)
 
         return PointRecord(shapeType, recordBBox, points = points)
     }
