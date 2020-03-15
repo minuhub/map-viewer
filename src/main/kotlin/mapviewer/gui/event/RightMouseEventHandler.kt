@@ -60,16 +60,15 @@ class RightMouseEventHandler(group: Group, highlightCanvas: Canvas, shpList: Mut
                         for (index in shpList.indices) {
                             selectedFeatureParams.featureList.add(HighlightManager.selectOneFeature(shpList[index], eventX, eventY, mapParams))
                             if (selectedFeatureParams.featureList[index].isNotEmpty()) {
-                                println("The ${shpList[index].shpHeader.shapeType} number is ${selectedFeatureParams.featureList[index]}")
+//                                println("The ${shpList[index].shpHeader.shapeType} number is ${selectedFeatureParams.featureList[index]}")
                             }
                         }
                     } else {
                         val selectedBBox = makeSelectedBBox(selection, mapParams)
                         for (index in shpList.indices) {
-                            println("here2")
                             selectedFeatureParams.featureList.add(HighlightManager.selectFeatures(shpList[index], selectedBBox))
                             if (selectedFeatureParams.featureList[index].isNotEmpty()) {
-                                println("The ${shpList[index].shpHeader.shapeType} number is ${selectedFeatureParams.featureList[index]}")
+//                                println("The ${shpList[index].shpHeader.shapeType} number is ${selectedFeatureParams.featureList[index]}")
                             }
                         }
                     }

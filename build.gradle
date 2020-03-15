@@ -36,4 +36,4 @@ compileTestKotlin {
 }
 
 apply plugin: 'application'
-mainClassName = 'mapviewer.shp.MainKt'
+mainClassName = 'mapviewer.MainAppKt'
