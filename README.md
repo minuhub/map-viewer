@@ -11,3 +11,4 @@
 ## 실행 영상
 [![Video Label](http://img.youtube.com/vi/vZIlb4xvysA/0.jpg)](https://www.youtube.com/watch?v=vZIlb4xvysA)
 
+> 클릭하면 해당 프로그램 실행 과정의 유튜브 영상을 볼 수 있습니다.
